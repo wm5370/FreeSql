@@ -42,12 +42,15 @@ namespace FreeSql.Extensions.LazyLoading
 		/*
          * 于2026-03-12：删除CS-Script.Core库，改用官方的库 Microsoft.CodeAnalysis.CSharp。
          */
-		private static readonly HashSet<MetadataReference> references = new HashSet<MetadataReference>(from eve in AppDomain.CurrentDomain.GetAssemblies().AsParallel()
-																									   let ass = CreateMetadataReference(eve)
-																									   where ass != null
-																									   select ass);
+		private static readonly HashSet<MetadataReference> references = new();
 		static LazyLoadingComplier()
 		{
+			foreach (var eve in AppDomain.CurrentDomain.GetAssemblies().AsParallel())
+			{
+				var ass = CreateMetadataReference(eve);
+				if (ass != null)
+					references.Add(ass);
+			}
 			references.Add(CreateMetadataReference(typeof(String).Assembly));
 			references.Add(CreateMetadataReference(Assembly.GetEntryAssembly()));
 			references.Add(CreateMetadataReference(Assembly.GetCallingAssembly()));
